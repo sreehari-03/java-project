@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.srms.controller.TeacherPortalController">
+  <fx:define><ToggleGroup fx:id="navGroup"/></fx:define>
+
+  <left>
+    <VBox styleClass="sidebar" prefWidth="250" spacing="4">
+      <Label text="📘  Result System" styleClass="side-brand"/>
+      <Label fx:id="teacherName" styleClass="side-sub" wrapText="true"/>
+      <Region prefHeight="16"/>
+      <ToggleButton fx:id="navDash" text="Dashboard" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navStudents" text="Student Management" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navResults" text="Result Entry &amp; Management" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navRemarks" text="Teacher Remarks" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navFeedback" text="Feedback Review" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navSettings" text="Settings" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <Region VBox.vgrow="ALWAYS"/>
+      <Button text="Logout" styleClass="nav-btn" maxWidth="Infinity" onAction="#onLogout"/>
+    </VBox>
+  </left>
+
+  <center>
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="page-scroll">
+      <StackPane alignment="TOP_LEFT" styleClass="page-pad">
+
+        <!-- DASHBOARD -->
+        <VBox fx:id="dashPage" spacing="18" visible="false" managed="false">
+          <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="Teacher Dashboard" styleClass="h1"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="+ Enter Results" styleClass="btn-peach" onAction="#goResults"/>
+            <Button text="Student Records" styleClass="btn-secondary" onAction="#goStudents"/>
+            <Button text="Review Feedback" styleClass="btn-primary" onAction="#goFeedback"/>
+          </HBox>
+          <HBox spacing="14">
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS"><Label text="Total Students" styleClass="muted"/><Label fx:id="kpiStudents" styleClass="kpi-value"/></VBox>
+            <VBox styleClass="kpi-card, kpi-slate" HBox.hgrow="ALWAYS"><Label text="Results Entered" styleClass="muted"/><Label fx:id="kpiResults" styleClass="kpi-value"/></VBox>
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS"><Label text="Pending Feedback" styleClass="muted"/><Label fx:id="kpiPending" styleClass="kpi-value"/></VBox>
+            <VBox styleClass="kpi-card, kpi-coral" HBox.hgrow="ALWAYS"><Label text="Correction Requests" styleClass="muted"/><Label fx:id="kpiCorrections" styleClass="kpi-value"/></VBox>
+          </HBox>
+          <HBox spacing="18">
+            <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="8">
+              <Label text="Class-wise Average (%)" styleClass="h3"/>
+              <BarChart fx:id="classChart" legendVisible="false" animated="false" prefHeight="280">
+                <xAxis><CategoryAxis side="BOTTOM"/></xAxis>
+                <yAxis><NumberAxis side="LEFT" autoRanging="false" lowerBound="0" upperBound="100" tickUnit="20"/></yAxis>
+              </BarChart>
+            </VBox>
+            <VBox styleClass="card" prefWidth="320" minWidth="260" spacing="8">
+              <Label text="Recent Activity" styleClass="h3"/>
+              <ListView fx:id="activityList" prefHeight="280"/>
+            </VBox>
+          </HBox>
+        </VBox>
+
+        <!-- STUDENT MANAGEMENT -->
+        <VBox fx:id="studentsPage" spacing="14" visible="false" managed="false">
+          <Label text="Student Management" styleClass="h1"/>
+          <HBox spacing="12">
+            <TextField fx:id="searchField" promptText="🔍  Search by name or registration number" HBox.hgrow="ALWAYS"/>
+            <ComboBox fx:id="classFilter" prefWidth="180"/>
+          </HBox>
+          <TableView fx:id="studentTable" prefHeight="480"/>
+        </VBox>
+
+        <!-- RESULT ENTRY -->
+        <VBox fx:id="resultPage" spacing="14" visible="false" managed="false">
+          <Label text="Result Entry &amp; Management" styleClass="h1"/>
+          <VBox styleClass="card" spacing="12">
+            <HBox spacing="14">
+              <VBox spacing="4" HBox.hgrow="ALWAYS"><Label text="Student" styleClass="field-label"/><ComboBox fx:id="studentBox" maxWidth="Infinity"/></VBox>
+              <VBox spacing="4" HBox.hgrow="ALWAYS"><Label text="Academic Term" styleClass="field-label"/><ComboBox fx:id="termBox" maxWidth="Infinity"/></VBox>
+            </HBox>
+            <TableView fx:id="marksTable" prefHeight="290"/>
+            <Label text="Teacher Remarks (weaknesses &amp; recommendations)" styleClass="field-label"/>
+            <TextArea fx:id="remarksArea" prefRowCount="5" wrapText="true"
+                      promptText="e.g. Weak in algebra word problems; recommend extra practice sheets and a revision plan…"/>
+            <HBox spacing="10">
+              <Button text="Save Result" styleClass="btn-primary" onAction="#onSaveResult"/>
+              <Button text="Cancel" styleClass="btn-outline" onAction="#onCancel"/>
+            </HBox>
+          </VBox>
+        </VBox>
+
+        <!-- TEACHER REMARKS -->
+        <VBox fx:id="remarksPage" spacing="14" visible="false" managed="false">
+          <Label text="Teacher Remarks" styleClass="h1"/>
+          <TableView fx:id="remarksTable" prefHeight="420"/>
+        </VBox>
+
+        <!-- FEEDBACK REVIEW -->
+        <VBox fx:id="feedbackPage" spacing="14" visible="false" managed="false">
+          <Label text="Feedback Review" styleClass="h1"/>
+          <TabPane tabClosingPolicy="UNAVAILABLE" prefHeight="480">
+            <tabs>
+              <Tab text="Correction Requests"><content><TableView fx:id="corrTable"/></content></Tab>
+              <Tab text="Topic Assistance Requests"><content><TableView fx:id="topicTable"/></content></Tab>
+            </tabs>
+          </TabPane>
+        </VBox>
+
+        <!-- SETTINGS -->
+        <VBox fx:id="settingsPage" spacing="14" visible="false" managed="false">
+          <Label text="Settings" styleClass="h1"/>
+          <VBox styleClass="card" spacing="6">
+            <Label text="Pass mark: 35%" styleClass="h3"/>
+            <Label text="Grading and account settings will be connected to the database later." styleClass="muted"/>
+          </VBox>
+        </VBox>
+
+      </StackPane>
+    </ScrollPane>
+  </center>
+</BorderPane>

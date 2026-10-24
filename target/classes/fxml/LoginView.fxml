@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.srms.controller.LoginController">
+  <fx:define><ToggleGroup fx:id="roleGroup"/></fx:define>
+  <columnConstraints>
+    <ColumnConstraints percentWidth="45"/>
+    <ColumnConstraints percentWidth="55"/>
+  </columnConstraints>
+  <rowConstraints><RowConstraints vgrow="ALWAYS"/></rowConstraints>
+
+  <!-- LEFT: branding (45%) -->
+  <VBox GridPane.columnIndex="0" styleClass="login-left" spacing="28">
+    <Label text="Student Result Management System" styleClass="brand-title" wrapText="true"/>
+    <StackPane styleClass="illustration" VBox.vgrow="ALWAYS">
+      <Label text="🎓  📚" styleClass="illustration-emoji"/>
+    </StackPane>
+    <Label text="Better Learning. Brighter Futures." styleClass="tagline" wrapText="true"/>
+  </VBox>
+
+  <!-- RIGHT: form (55%) -->
+  <VBox GridPane.columnIndex="1" styleClass="login-right">
+    <HBox alignment="CENTER_RIGHT"><Hyperlink text="Contact Admin" styleClass="link" onAction="#onContactAdmin"/></HBox>
+    <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
+      <VBox maxWidth="400" spacing="6">
+        <Label text="Welcome Back" styleClass="h1"/>
+        <Label text="Sign in to view or manage results." styleClass="muted"/>
+        <HBox styleClass="seg">
+          <ToggleButton fx:id="studentTab" text="Student Login" toggleGroup="$roleGroup" selected="true" styleClass="seg-btn" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+          <ToggleButton fx:id="teacherTab" text="Teacher Login" toggleGroup="$roleGroup" styleClass="seg-btn" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        </HBox>
+
+        <Label text="Username" styleClass="field-label"/>
+        <HBox styleClass="input-box">
+          <Label text="👤"/>
+          <TextField fx:id="usernameField" promptText="Enter username" HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <Label text="Password" styleClass="field-label"/>
+        <HBox styleClass="input-box">
+          <Label text="🔒"/>
+          <StackPane HBox.hgrow="ALWAYS">
+            <PasswordField fx:id="passwordField" promptText="Enter password"/>
+            <TextField fx:id="passwordText" promptText="Enter password" visible="false" managed="false"/>
+          </StackPane>
+          <Button text="👁" styleClass="icon-btn" onAction="#toggleEye" focusTraversable="false"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" style="-fx-padding: 8 0 8 0;">
+          <CheckBox text="Remember me"/>
+          <Region HBox.hgrow="ALWAYS"/>
+          <Hyperlink text="Forgot password?" styleClass="link" onAction="#onForgot"/>
+        </HBox>
+
+        <Button text="Log In →" styleClass="btn-primary" maxWidth="Infinity" defaultButton="true" onAction="#onLogin"/>
+        <Label fx:id="errorLabel" styleClass="error-label"/>
+        <Button text="Login with School Account" styleClass="btn-outline" maxWidth="Infinity" onAction="#onSso"/>
+
+        <HBox alignment="CENTER" style="-fx-padding: 14 0 0 0;">
+          <Label text="New here?" styleClass="muted"/>
+          <Hyperlink text="Create account" styleClass="link" onAction="#onRegister"/>
+        </HBox>
+        <Label text="Demo: student / student123  ·  teacher / teacher123" styleClass="muted" maxWidth="Infinity" alignment="CENTER" style="-fx-font-size: 12px;"/>
+      </VBox>
+    </VBox>
+  </VBox>
+</GridPane>
