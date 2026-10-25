@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.srms.controller.RegisterController" styleClass="register-bg">
+  <fx:define><ToggleGroup fx:id="accountGroup"/></fx:define>
+  <VBox styleClass="card, register-card" maxWidth="620" maxHeight="-Infinity" spacing="6">
+    <Label text="Create Account" styleClass="h1"/>
+    <Label text="Join the Student Result Management System" styleClass="muted"/>
+
+    <GridPane hgap="14" vgap="2" style="-fx-padding: 8 0 0 0;">
+      <columnConstraints>
+        <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+        <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+      </columnConstraints>
+
+      <VBox GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Label text="School Name" styleClass="field-label"/>
+        <HBox styleClass="input-box"><Label text="🏫"/><TextField fx:id="schoolField" HBox.hgrow="ALWAYS"/></HBox>
+      </VBox>
+      <VBox GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <Label text="Registration Number" styleClass="field-label"/>
+        <HBox styleClass="input-box"><Label text="🪪"/><TextField fx:id="regField" promptText="e.g. STU010" HBox.hgrow="ALWAYS"/></HBox>
+      </VBox>
+
+      <VBox GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <Label text="Full Name" styleClass="field-label"/>
+        <HBox styleClass="input-box"><Label text="👤"/><TextField fx:id="nameField" HBox.hgrow="ALWAYS"/></HBox>
+      </VBox>
+      <VBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <Label text="Class (students)" styleClass="field-label"/>
+        <HBox styleClass="input-box"><Label text="📖"/><TextField fx:id="classField" promptText="e.g. 10-A" HBox.hgrow="ALWAYS"/></HBox>
+      </VBox>
+
+      <VBox GridPane.columnIndex="0" GridPane.rowIndex="2">
+        <Label text="Username" styleClass="field-label"/>
+        <HBox styleClass="input-box"><Label text="@"/><TextField fx:id="usernameField" HBox.hgrow="ALWAYS"/></HBox>
+      </VBox>
+      <VBox GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <Label text="Email Address" styleClass="field-label"/>
+        <HBox styleClass="input-box"><Label text="✉"/><TextField fx:id="emailField" HBox.hgrow="ALWAYS"/></HBox>
+      </VBox>
+
+      <VBox GridPane.columnIndex="0" GridPane.rowIndex="3">
+        <Label text="Password" styleClass="field-label"/>
+        <HBox styleClass="input-box"><Label text="🔒"/><PasswordField fx:id="passField" HBox.hgrow="ALWAYS"/></HBox>
+      </VBox>
+      <VBox GridPane.columnIndex="1" GridPane.rowIndex="3">
+        <Label text="Confirm Password" styleClass="field-label"/>
+        <HBox styleClass="input-box"><Label text="🔒"/><PasswordField fx:id="confirmField" HBox.hgrow="ALWAYS"/></HBox>
+      </VBox>
+    </GridPane>
+
+    <Label text="Are you a teacher / admin?" styleClass="field-label"/>
+    <HBox styleClass="seg">
+      <ToggleButton text="Student" toggleGroup="$accountGroup" selected="true" styleClass="seg-btn" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+      <ToggleButton fx:id="teacherTog" text="Teacher" toggleGroup="$accountGroup" styleClass="seg-btn" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+    </HBox>
+
+    <CheckBox fx:id="termsCheck" text="I agree to the Terms &amp; Conditions" style="-fx-padding: 10 0 6 0;"/>
+    <Button text="Create Account →" styleClass="btn-primary" maxWidth="Infinity" defaultButton="true" onAction="#onCreate"/>
+    <Label fx:id="errorLabel" styleClass="error-label"/>
+    <HBox alignment="CENTER">
+      <Label text="Already have an account?" styleClass="muted"/>
+      <Hyperlink text="Log In" styleClass="link" onAction="#onLogin"/>
+    </HBox>
+  </VBox>
+</StackPane>
