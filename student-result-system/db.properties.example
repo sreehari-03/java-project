@@ -1,0 +1,17 @@
+# MySQL Database Connection Configuration Example
+# Copy this file to 'db.properties' in the application directory or configure via resources
+
+db.url=jdbc:mysql://localhost:3306/srms_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+db.username=root
+# Leave blank for a default XAMPP root account; otherwise enter your MySQL password.
+db.password=
+db.driver=com.mysql.cj.jdbc.Driver
+
+# Connection Pool Settings
+db.pool.maxSize=10
+db.pool.minIdle=2
+db.pool.idleTimeout=30000
+db.pool.connectionTimeout=10000
+
+# Auto initialize schema on connect if missing
+db.autoInitSchema=true

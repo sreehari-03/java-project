@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.srms.controller.StudentPortalController">
+  <fx:define><ToggleGroup fx:id="navGroup"/></fx:define>
+
+  <!-- LEFT SIDEBAR -->
+  <left>
+    <VBox styleClass="sidebar" prefWidth="240" spacing="2">
+      <HBox alignment="CENTER_LEFT" spacing="10" styleClass="side-brand-box">
+        <Label text="📘" styleClass="brand-icon"/>
+        <VBox spacing="1">
+          <Label text="Student Result" styleClass="side-brand"/>
+          <Label text="Management System" styleClass="side-brand"/>
+        </VBox>
+      </HBox>
+      <Region prefHeight="10"/>
+      <ToggleButton fx:id="navDash" text="🏠  Dashboard" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navResults" text="📊  My Results" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navCorrection" text="✏  Request Correction" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navFocus" text="🎯  Request Extra Focus" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navProfile" text="👤  Profile" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <Region VBox.vgrow="ALWAYS"/>
+      <Button text="⬅  Logout" styleClass="nav-btn,nav-logout" maxWidth="Infinity" onAction="#onLogout"/>
+    </VBox>
+  </left>
+
+  <!-- MAIN CONTENT -->
+  <center>
+    <VBox>
+      <!-- TOP HEADER BAR -->
+      <HBox styleClass="top-header" alignment="CENTER_LEFT" spacing="14">
+        <VBox HBox.hgrow="ALWAYS">
+          <Label text="Welcome, Rohan Mehta" styleClass="welcome-title"/>
+          <Label text="Student Portal" styleClass="muted"/>
+        </VBox>
+        <Label text="🔔" styleClass="notif-icon"/>
+        <VBox alignment="CENTER_RIGHT" styleClass="user-chip" spacing="1">
+          <Label fx:id="sideName" styleClass="user-chip-name"/>
+          <Label text="Student" styleClass="user-chip-role"/>
+        </VBox>
+      </HBox>
+
+      <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="page-scroll" VBox.vgrow="ALWAYS">
+        <StackPane alignment="TOP_LEFT" styleClass="page-pad">
+
+          <!-- STUDENT DASHBOARD -->
+          <VBox fx:id="dashPage" spacing="18" visible="false" managed="false">
+            <HBox alignment="CENTER_LEFT">
+              <VBox HBox.hgrow="ALWAYS">
+                <Label text="My Dashboard" styleClass="h1"/>
+                <Label text="Track your performance and stay on top of your progress" styleClass="muted"/>
+              </VBox>
+            </HBox>
+
+            <!-- Profile + Performance -->
+            <HBox spacing="18">
+              <!-- Profile Card -->
+              <VBox styleClass="card,profile-card" prefWidth="280" spacing="16">
+                <HBox spacing="14" alignment="CENTER_LEFT">
+                  <Label fx:id="avatar" styleClass="avatar"/>
+                  <VBox spacing="3">
+                    <Label fx:id="dpName" styleClass="profile-name-dark"/>
+                    <Label fx:id="dpMeta" styleClass="profile-meta-dark" wrapText="true"/>
+                  </VBox>
+                </HBox>
+                <Separator/>
+                <Button text="📊  View My Results&#10;Check your marks and teacher remarks" styleClass="action-card" maxWidth="Infinity" onAction="#goResults"/>
+                <Button text="✏  Request Correction&#10;Report any discrepancies in your marks" styleClass="action-card" maxWidth="Infinity" onAction="#goCorrection"/>
+                <Button text="🎯  Request Extra Focus&#10;Ask for help on specific topics" styleClass="action-card" maxWidth="Infinity" onAction="#goFocus"/>
+              </VBox>
+
+              <!-- Overall Performance Donut -->
+              <VBox styleClass="card" prefWidth="240" spacing="8" alignment="TOP_CENTER">
+                <Label text="Overall Performance" styleClass="h3"/>
+                <StackPane>
+                  <PieChart fx:id="donut" legendVisible="false" labelsVisible="false"
+                            animated="false" startAngle="90" prefWidth="200" prefHeight="200"/>
+                  <Circle radius="50" styleClass="donut-hole"/>
+                  <Label fx:id="donutLabel" styleClass="donut-text"/>
+                </StackPane>
+                <Label fx:id="donutCaption" styleClass="muted"/>
+              </VBox>
+
+              <!-- Subject Chart -->
+              <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="8">
+                <Label text="My Progress" styleClass="h3"/>
+                <BarChart fx:id="subjectChart" legendVisible="false" animated="false" prefHeight="240">
+                  <xAxis><CategoryAxis side="BOTTOM"/></xAxis>
+                  <yAxis><NumberAxis side="LEFT" autoRanging="false" lowerBound="0" upperBound="100" tickUnit="20"/></yAxis>
+                </BarChart>
+              </VBox>
+            </HBox>
+          </VBox>
+
+          <!-- MY RESULTS -->
+          <VBox fx:id="resultsPage" spacing="14" visible="false" managed="false">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+              <VBox HBox.hgrow="ALWAYS">
+                <Label text="Results &amp; Remarks View" styleClass="h1"/>
+                <Label text="View detailed results, teacher remarks and status" styleClass="muted"/>
+              </VBox>
+              <ComboBox fx:id="termBox" prefWidth="220"/>
+              <Button text="+ Submit Correction Request" styleClass="btn-blue" onAction="#goCorrection"/>
+            </HBox>
+            <TableView fx:id="resultTable" prefHeight="320"/>
+            <VBox styleClass="card" spacing="6">
+              <Label text="Teacher Remarks" styleClass="h3"/>
+              <Label fx:id="remarkLabel" wrapText="true" styleClass="remark-text"/>
+            </VBox>
+          </VBox>
+
+          <!-- REQUEST CORRECTION -->
+          <VBox fx:id="correctionPage" spacing="14" visible="false" managed="false">
+            <Label text="Request Correction" styleClass="h1"/>
+            <Label text="Report any discrepancies in your marks" styleClass="muted"/>
+            <VBox styleClass="card" spacing="10">
+              <HBox spacing="14">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                  <Label text="Select Subject" styleClass="field-label"/>
+                  <ComboBox fx:id="corrSubject" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                  <Label text="Academic Term" styleClass="field-label"/>
+                  <ComboBox fx:id="corrTermBox" maxWidth="Infinity"/>
+                </VBox>
+              </HBox>
+              <Label text="Describe what needs correction or clarification" styleClass="field-label"/>
+              <TextArea fx:id="corrText" prefRowCount="4" wrapText="true"
+                        promptText="e.g. Marks seem incorrect for Q3. My answer was correct as per textbook page 142..."/>
+              <Button text="Submit Correction Request" styleClass="btn-blue" onAction="#onSubmitCorrection"/>
+            </VBox>
+            <Label text="Your Requests" styleClass="h3"/>
+            <TableView fx:id="corrTable" prefHeight="260"/>
+          </VBox>
+
+          <!-- REQUEST EXTRA FOCUS -->
+          <VBox fx:id="focusPage" spacing="14" visible="false" managed="false">
+            <Label text="Special Focus Request" styleClass="h1"/>
+            <Label text="Request extra focus or revision on topics you find challenging" styleClass="muted"/>
+            <VBox styleClass="card" spacing="10">
+              <HBox spacing="14">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                  <Label text="Select Subject" styleClass="field-label"/>
+                  <ComboBox fx:id="focusSubject" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                  <Label text="Topic / Area" styleClass="field-label"/>
+                  <ComboBox fx:id="focusTopic" maxWidth="Infinity"/>
+                </VBox>
+              </HBox>
+              <Label text="Additional Comments" styleClass="field-label"/>
+              <TextArea fx:id="focusText" prefRowCount="4" wrapText="true"
+                        promptText="Explain what you need help with..."/>
+              <Button text="Submit Request" styleClass="btn-blue" onAction="#onSubmitFocus"/>
+            </VBox>
+            <Label text="Your Requests" styleClass="h3"/>
+            <TableView fx:id="focusTable" prefHeight="260"/>
+          </VBox>
+
+          <!-- PROFILE -->
+          <VBox fx:id="profilePage" spacing="14" visible="false" managed="false">
+            <Label text="Profile" styleClass="h1"/>
+            <VBox styleClass="card" spacing="0">
+              <GridPane hgap="24" vgap="16" styleClass="profile-grid">
+                <columnConstraints><ColumnConstraints minWidth="160"/><ColumnConstraints hgrow="ALWAYS"/></columnConstraints>
+                <Label text="Full Name" styleClass="muted" GridPane.rowIndex="0"/>
+                <Label fx:id="profName" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="profile-value"/>
+                <Label text="Registration No" styleClass="muted" GridPane.rowIndex="1"/>
+                <Label fx:id="profReg" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="profile-value"/>
+                <Label text="Class" styleClass="muted" GridPane.rowIndex="2"/>
+                <Label fx:id="profClass" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="profile-value"/>
+                <Label text="Email" styleClass="muted" GridPane.rowIndex="3"/>
+                <Label fx:id="profEmail" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="profile-value"/>
+                <Label text="School" styleClass="muted" GridPane.rowIndex="4"/>
+                <Label fx:id="profSchool" GridPane.rowIndex="4" GridPane.columnIndex="1" styleClass="profile-value"/>
+              </GridPane>
+            </VBox>
+          </VBox>
+
+        </StackPane>
+      </ScrollPane>
+    </VBox>
+  </center>
+</BorderPane>

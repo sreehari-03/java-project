@@ -1,0 +1,9 @@
+target/
+.idea/
+.vscode/
+*.iml
+.env
+*.log
+db.properties
+
+/pom.xml.conflict-backup
