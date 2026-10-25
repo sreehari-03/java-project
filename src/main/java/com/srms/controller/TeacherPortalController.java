@@ -2,6 +2,7 @@ package com.srms.controller;
 
 import com.srms.Nav;
 import com.srms.data.DataStore;
+import com.srms.data.StudentService;
 import com.srms.model.MarkRow;
 import com.srms.model.Request;
 import com.srms.model.Student;
@@ -16,10 +17,12 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class TeacherPortalController {
     private final DataStore ds = DataStore.I;
+    private final ObservableList<Student> databaseStudents = FXCollections.observableArrayList();
     private Map<ToggleButton, Node> pages;
     private FilteredList<Student> filtered;
 
@@ -48,6 +51,7 @@ public class TeacherPortalController {
     @FXML
     private void initialize() {
         teacherName.setText(ds.current.name() + " · Teacher / Admin");
+        refreshStudentsFromDatabase();
         pages = new LinkedHashMap<>();
         pages.put(navDash, dashPage); pages.put(navStudents, studentsPage); pages.put(navResults, resultPage);
         pages.put(navRemarks, remarksPage); pages.put(navFeedback, feedbackPage); pages.put(navSettings, settingsPage);
@@ -72,26 +76,49 @@ public class TeacherPortalController {
 
     private void show(Toggle t) {
         pages.forEach((b, p) -> { boolean on = b == t; p.setVisible(on); p.setManaged(on); });
-        if (t == navDash) refreshDashboard();
-        else if (t == navStudents) refreshClassFilter();
+        if (t == navDash) {
+            refreshStudentsFromDatabase();
+            refreshDashboard();
+        }
+        else if (t == navStudents) {
+            refreshStudentsFromDatabase();
+            refreshClassFilter();
+        }
         else if (t == navResults) loadMarks();
         else if (t == navRemarks) refreshRemarks();
         else if (t == navFeedback) { corrTable.refresh(); topicTable.refresh(); }
+    }
+
+    private void refreshStudentsFromDatabase() {
+        try {
+            databaseStudents.setAll(StudentService.findAll());
+            if (studentTable != null) studentTable.refresh();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(
+                    Alert.AlertType.ERROR,
+                    "Student records could not be refreshed from the database. "
+                            + "The currently available student list will remain visible.",
+                    ButtonType.OK);
+            alert.setHeaderText("Student records unavailable");
+            alert.setTitle("Student Result Management System");
+            alert.showAndWait();
+        }
     }
 
     // ------------------------------------------------------------------ dashboard
     private void refreshDashboard() {
         long pending = ds.corrections.stream().filter(r -> r.status.equals("Pending")).count()
                 + ds.topics.stream().filter(r -> r.status.equals("Pending")).count();
-        kpiStudents.setText(String.valueOf(ds.students.size()));
+        kpiStudents.setText(String.valueOf(databaseStudents.size()));
         kpiResults.setText(String.valueOf(ds.resultsEntered()));
         kpiPending.setText(String.valueOf(pending));
         kpiCorrections.setText(String.valueOf(ds.corrections.size()));
 
         XYChart.Series<String, Number> s = new XYChart.Series<>();
         s.setName("Average %");
-        ds.students.stream().map(x -> x.cls).distinct().sorted().forEach(c -> {
-            double avg = ds.students.stream().filter(x -> x.cls.equals(c))
+        databaseStudents.stream().map(x -> x.cls).distinct().sorted().forEach(c -> {
+            double avg = databaseStudents.stream().filter(x -> x.cls.equals(c))
                     .mapToDouble(x -> ds.average(x.reg, "Term 1")).filter(v -> v >= 0).average().orElse(0);
             s.getData().add(new XYChart.Data<>(c, Math.round(avg)));
         });
@@ -101,11 +128,15 @@ public class TeacherPortalController {
     @FXML private void goResults() { navResults.setSelected(true); }
     @FXML private void goStudents() { navStudents.setSelected(true); }
     @FXML private void goFeedback() { navFeedback.setSelected(true); }
+    @FXML private void onRefreshStudents() {
+        refreshStudentsFromDatabase();
+        refreshClassFilter();
+    }
 
     // ------------------------------------------------------------------ student management
     private void setupStudentTable() {
         Ui.fit(studentTable);
-        filtered = new FilteredList<>(ds.students, s -> true);
+        filtered = new FilteredList<>(databaseStudents, s -> true);
         studentTable.setItems(filtered);
         studentTable.getColumns().addAll(
                 Ui.<Student>col("REG NO", s -> s.reg),
@@ -132,7 +163,7 @@ public class TeacherPortalController {
     private void refreshClassFilter() {
         String sel = classFilter.getValue();
         List<String> l = new ArrayList<>(List.of("All"));
-        ds.students.stream().map(s -> s.cls).distinct().sorted().forEach(l::add);
+        databaseStudents.stream().map(s -> s.cls).distinct().sorted().forEach(l::add);
         classFilter.setItems(FXCollections.observableArrayList(l));
         classFilter.setValue(sel != null && l.contains(sel) ? sel : "All");
     }
@@ -157,6 +188,7 @@ public class TeacherPortalController {
     private void deleteStudent(Student s) {
         if (Ui.confirm("Delete " + s.name + " (" + s.reg + ")? Their results will be removed too.")) {
             ds.deleteStudent(s);
+            databaseStudents.remove(s);
             ds.addActivity("Student removed: " + s.name);
             refreshClassFilter();
         }

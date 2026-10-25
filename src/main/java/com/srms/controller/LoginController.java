@@ -1,11 +1,14 @@
 package com.srms.controller;
 
 import com.srms.Nav;
+import com.srms.data.AccountService;
 import com.srms.data.DataStore;
 import com.srms.model.Account;
 import com.srms.util.Ui;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+
+import java.sql.SQLException;
 
 public class LoginController {
     @FXML private ToggleGroup roleGroup;
@@ -32,7 +35,18 @@ public class LoginController {
     @FXML
     private void onLogin() {
         String role = teacherTab.isSelected() ? "teacher" : "student";
-        Account a = DataStore.I.authenticate(usernameField.getText().trim(), passwordField.getText());
+        String username = usernameField.getText().trim();
+        String password = passwordField.getText();
+        Account a = DataStore.I.authenticate(username, password);
+        if (a == null) {
+            try {
+                a = AccountService.authenticate(username, password);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                errorLabel.setText("Could not connect to the account database. Please try again.");
+                return;
+            }
+        }
         if (a == null) { errorLabel.setText("Invalid username or password."); return; }
         if (!a.role().equals(role)) {
             errorLabel.setText("This is a " + a.role() + " account. Switch the login tab.");

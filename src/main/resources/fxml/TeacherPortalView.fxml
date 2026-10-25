@@ -63,6 +63,7 @@
           <HBox spacing="12">
             <TextField fx:id="searchField" promptText="🔍  Search by name or registration number" HBox.hgrow="ALWAYS"/>
             <ComboBox fx:id="classFilter" prefWidth="180"/>
+            <Button text="Refresh" styleClass="btn-outline" onAction="#onRefreshStudents"/>
           </HBox>
           <TableView fx:id="studentTable" prefHeight="480"/>
         </VBox>

@@ -2,6 +2,7 @@ package com.srms.controller;
 
 import com.srms.Nav;
 import com.srms.data.DataStore;
+import com.srms.data.StudentService;
 import com.srms.model.Request;
 import com.srms.model.Student;
 import com.srms.util.Ui;
@@ -14,8 +15,10 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class StudentPortalController {
     private final DataStore ds = DataStore.I;
@@ -47,7 +50,7 @@ public class StudentPortalController {
 
     @FXML
     private void initialize() {
-        me = ds.find(ds.current.reg()).orElseThrow();
+        me = loadCurrentStudent();
         sideName.setText(me.name + " · Student");
         pages = new LinkedHashMap<>();
         pages.put(navDash, dashPage); pages.put(navResults, resultsPage); pages.put(navCorrection, correctionPage);
@@ -96,6 +99,46 @@ public class StudentPortalController {
 
         navGroup.selectedToggleProperty().addListener((o, a, n) -> { if (n == null) a.setSelected(true); else show(n); });
         navDash.setSelected(true);
+    }
+
+    private Student loadCurrentStudent() {
+        if (ds.current == null) {
+            throw new IllegalStateException("No authenticated account is available.");
+        }
+
+        String registrationNo = ds.current.reg();
+        try {
+            Student persistedStudent = StudentService.findForAccount(ds.current.username());
+            if (persistedStudent != null) {
+                ds.saveStudent(persistedStudent);
+                return persistedStudent;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Optional<Student> cachedStudent = ds.find(registrationNo);
+            if (cachedStudent.isPresent()) {
+                showDatabaseError("Could not refresh your profile from the database. "
+                        + "Showing the available local profile.");
+                return cachedStudent.get();
+            }
+            showDatabaseError("Could not load your student profile from the database.");
+            throw new IllegalStateException("Unable to load student " + registrationNo, e);
+        }
+
+        Optional<Student> demoStudent = ds.find(registrationNo);
+        if (demoStudent.isPresent()) return demoStudent.get();
+
+        IllegalStateException error = new IllegalStateException(
+                "No student record found for registration number " + registrationNo);
+        showDatabaseError(error.getMessage());
+        throw error;
+    }
+
+    private void showDatabaseError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+        alert.setHeaderText("Student profile unavailable");
+        alert.setTitle("Student Result Management System");
+        alert.showAndWait();
     }
 
     private void show(Toggle t) {

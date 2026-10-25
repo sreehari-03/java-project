@@ -69,6 +69,13 @@ public final class DataStore {
 
     // ---- students
     public Optional<Student> find(String reg) { return students.stream().filter(s -> s.reg.equals(reg)).findFirst(); }
+    public void saveStudent(Student student) {
+        OptionalInt index = java.util.stream.IntStream.range(0, students.size())
+                .filter(i -> students.get(i).reg.equals(student.reg))
+                .findFirst();
+        if (index.isPresent()) students.set(index.getAsInt(), student);
+        else students.add(student);
+    }
     public String nameOf(String reg) { return find(reg).map(s -> s.name).orElse(reg); }
     public void deleteStudent(Student s) {
         students.remove(s);

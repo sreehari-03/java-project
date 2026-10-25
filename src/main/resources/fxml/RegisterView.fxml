@@ -35,7 +35,7 @@
 
       <VBox GridPane.columnIndex="0" GridPane.rowIndex="2">
         <Label text="Username" styleClass="field-label"/>
-        <HBox styleClass="input-box"><Label text="@"/><TextField fx:id="usernameField" HBox.hgrow="ALWAYS"/></HBox>
+        <HBox styleClass="input-box"><Label text="\@"/><TextField fx:id="usernameField" HBox.hgrow="ALWAYS"/></HBox>
       </VBox>
       <VBox GridPane.columnIndex="1" GridPane.rowIndex="2">
         <Label text="Email Address" styleClass="field-label"/>
