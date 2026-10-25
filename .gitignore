@@ -1,0 +1,7 @@
+target/
+.vscode/
+.idea/
+*.iml
+.env
+*.log
+db.properties

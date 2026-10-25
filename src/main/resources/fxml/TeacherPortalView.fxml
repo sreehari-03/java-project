@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.srms.controller.TeacherPortalController">
+  <fx:define><ToggleGroup fx:id="navGroup"/></fx:define>
+
+  <!-- LEFT SIDEBAR -->
+  <left>
+    <VBox styleClass="sidebar" prefWidth="240" spacing="2">
+      <HBox alignment="CENTER_LEFT" spacing="10" styleClass="side-brand-box">
+        <Label text="📘" styleClass="brand-icon"/>
+        <VBox spacing="1">
+          <Label text="Student Result" styleClass="side-brand"/>
+          <Label text="Management System" styleClass="side-brand"/>
+        </VBox>
+      </HBox>
+      <Region prefHeight="10"/>
+      <ToggleButton fx:id="navDash" text="🏠  Dashboard" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navStudents" text="👥  Student Management" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navResults" text="📝  Result Entry &amp; Management" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navRemarks" text="✏  Teacher Remarks" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navFeedback" text="💬  Feedback Review" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <ToggleButton fx:id="navSettings" text="⚙  Settings" toggleGroup="$navGroup" styleClass="nav-btn" maxWidth="Infinity"/>
+      <Region VBox.vgrow="ALWAYS"/>
+    </VBox>
+  </left>
+
+  <!-- MAIN CONTENT -->
+  <center>
+    <!-- TOP HEADER BAR -->
+    <VBox>
+      <HBox styleClass="top-header" alignment="CENTER_LEFT" spacing="14">
+        <VBox HBox.hgrow="ALWAYS">
+          <Label text="Welcome, Ms. Sharma" styleClass="welcome-title"/>
+          <Label text="Teacher Portal" styleClass="muted"/>
+        </VBox>
+        <Label text="🔔" styleClass="notif-icon"/>
+        <VBox alignment="CENTER_RIGHT" styleClass="user-chip" spacing="1">
+          <Label fx:id="teacherName" styleClass="user-chip-name"/>
+          <Label text="Teacher" styleClass="user-chip-role"/>
+        </VBox>
+      </HBox>
+
+      <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="page-scroll" VBox.vgrow="ALWAYS">
+        <StackPane alignment="TOP_LEFT" styleClass="page-pad">
+
+          <!-- DASHBOARD -->
+          <VBox fx:id="dashPage" spacing="18" visible="false" managed="false">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+              <VBox HBox.hgrow="ALWAYS">
+                <Label text="Teacher Dashboard" styleClass="h1"/>
+                <Label text="Quick overview of your students and results" styleClass="muted"/>
+              </VBox>
+              <Button text="+ Enter Results" styleClass="btn-blue" onAction="#goResults"/>
+              <Button text="Student Records" styleClass="btn-outline" onAction="#goStudents"/>
+              <Button text="Review Feedback" styleClass="btn-outline" onAction="#goFeedback"/>
+            </HBox>
+
+            <!-- KPI CARDS -->
+            <HBox spacing="14">
+              <VBox styleClass="kpi-card,kpi-blue" HBox.hgrow="ALWAYS" spacing="6">
+                <Label text="👥" styleClass="kpi-icon"/>
+                <Label text="Total Students" styleClass="muted"/>
+                <Label fx:id="kpiStudents" text="—" styleClass="kpi-value"/>
+              </VBox>
+              <VBox styleClass="kpi-card,kpi-green" HBox.hgrow="ALWAYS" spacing="6">
+                <Label text="📋" styleClass="kpi-icon"/>
+                <Label text="Results Entered" styleClass="muted"/>
+                <Label fx:id="kpiResults" text="—" styleClass="kpi-value"/>
+              </VBox>
+              <VBox styleClass="kpi-card,kpi-orange" HBox.hgrow="ALWAYS" spacing="6">
+                <Label text="💬" styleClass="kpi-icon"/>
+                <Label text="Pending Feedback" styleClass="muted"/>
+                <Label fx:id="kpiPending" text="—" styleClass="kpi-value"/>
+              </VBox>
+              <VBox styleClass="kpi-card,kpi-red" HBox.hgrow="ALWAYS" spacing="6">
+                <Label text="⚠" styleClass="kpi-icon"/>
+                <Label text="Correction Requests" styleClass="muted"/>
+                <Label fx:id="kpiCorrections" text="—" styleClass="kpi-value"/>
+              </VBox>
+            </HBox>
+
+            <HBox spacing="18">
+              <!-- Bar Chart -->
+              <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="8">
+                <Label text="Class-wise Student Count" styleClass="h3"/>
+                <BarChart fx:id="classChart" legendVisible="false" animated="false" prefHeight="260">
+                  <xAxis><CategoryAxis side="BOTTOM"/></xAxis>
+                  <yAxis><NumberAxis side="LEFT" autoRanging="true"/></yAxis>
+                </BarChart>
+              </VBox>
+              <!-- Recent Activity -->
+              <VBox styleClass="card" prefWidth="300" minWidth="240" spacing="8">
+                <Label text="Recent Activities" styleClass="h3"/>
+                <ListView fx:id="activityList" prefHeight="260" styleClass="activity-list"/>
+              </VBox>
+            </HBox>
+
+            <!-- Quick Actions -->
+            <VBox styleClass="card" spacing="10">
+              <Label text="Quick Actions" styleClass="h3"/>
+              <HBox spacing="14">
+                <Button text="➕ Add / Manage&#10;Students" styleClass="action-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#goStudents"/>
+                <Button text="📝 Enter / Update&#10;Results" styleClass="action-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#goResults"/>
+                <Button text="💬 View Feedback&#10;Requests" styleClass="action-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#goFeedback"/>
+                <Button text="✏ View Teacher&#10;Remarks" styleClass="action-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#goRemarks"/>
+              </HBox>
+            </VBox>
+          </VBox>
+
+          <!-- STUDENT MANAGEMENT -->
+          <VBox fx:id="studentsPage" spacing="14" visible="false" managed="false">
+            <Label text="Student Management" styleClass="h1"/>
+            <Label text="View, search and manage registered students" styleClass="muted"/>
+            <HBox spacing="12" alignment="CENTER_LEFT">
+              <TextField fx:id="searchField" promptText="🔍  Search by name, registration number or class..." HBox.hgrow="ALWAYS"/>
+              <ComboBox fx:id="classFilter" prefWidth="160" promptText="All Classes"/>
+              <Button text="+ Add Student" styleClass="btn-blue" onAction="#onAddStudent"/>
+            </HBox>
+            <TableView fx:id="studentTable" prefHeight="520"/>
+          </VBox>
+
+          <!-- RESULT ENTRY & MANAGEMENT -->
+          <VBox fx:id="resultPage" spacing="14" visible="false" managed="false">
+            <Label text="Result Entry &amp; Management" styleClass="h1"/>
+            <Label text="Select a student and enter/update marks for each subject" styleClass="muted"/>
+            <VBox styleClass="card" spacing="12">
+              <Label text="Select Student" styleClass="field-label"/>
+              <ComboBox fx:id="studentBox" maxWidth="Infinity" promptText="Search by name or registration number..."/>
+              <Label text="Academic Term" styleClass="field-label"/>
+              <ComboBox fx:id="termBox" maxWidth="Infinity"/>
+              <TableView fx:id="marksTable" prefHeight="300"/>
+              <VBox styleClass="card" spacing="6">
+                <Label text="Teacher Remarks" styleClass="field-label"/>
+                <TextArea fx:id="remarksArea" prefRowCount="4" wrapText="true"
+                          promptText="Enter overall remarks, mention weak areas and suggestions…"/>
+              </VBox>
+              <HBox spacing="10">
+                <Button text="Save Result" styleClass="btn-blue" onAction="#onSaveResult"/>
+                <Button text="Cancel" styleClass="btn-outline" onAction="#onCancel"/>
+              </HBox>
+            </VBox>
+          </VBox>
+
+          <!-- TEACHER REMARKS OVERVIEW -->
+          <VBox fx:id="remarksPage" spacing="14" visible="false" managed="false">
+            <Label text="Teacher Remarks" styleClass="h1"/>
+            <Label text="View and edit all teacher remarks across students and terms" styleClass="muted"/>
+            <TableView fx:id="remarksTable" prefHeight="500"/>
+          </VBox>
+
+          <!-- FEEDBACK REVIEW -->
+          <VBox fx:id="feedbackPage" spacing="14" visible="false" managed="false">
+            <Label text="Feedback Review Panel" styleClass="h1"/>
+            <TabPane tabClosingPolicy="UNAVAILABLE" prefHeight="500">
+              <tabs>
+                <Tab text="Correction Requests"><content><TableView fx:id="corrTable"/></content></Tab>
+                <Tab text="Topic Assistance Requests"><content><TableView fx:id="topicTable"/></content></Tab>
+              </tabs>
+            </TabPane>
+          </VBox>
+
+          <!-- SETTINGS -->
+          <VBox fx:id="settingsPage" spacing="14" visible="false" managed="false">
+            <Label text="Settings" styleClass="h1"/>
+            <VBox styleClass="card" spacing="12">
+              <Label text="Database Configuration" styleClass="h3"/>
+              <Label text="Edit db.properties in the project root directory to change MySQL credentials." styleClass="muted" wrapText="true"/>
+              <Label text="Academic Configuration" styleClass="h3"/>
+              <Label text="Pass mark: 35% (per subject, configurable in database subjects table)" styleClass="muted"/>
+              <Label text="Academic Year: 2025-2026" styleClass="muted"/>
+            </VBox>
+          </VBox>
+
+        </StackPane>
+      </ScrollPane>
+    </VBox>
+  </center>
+</BorderPane>
