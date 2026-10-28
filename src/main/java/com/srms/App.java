@@ -7,8 +7,8 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
         stage.setTitle("Student Result Management System");
-        stage.setMinWidth(1100);
-        stage.setMinHeight(740);
+        stage.setMinWidth(900);
+        stage.setMinHeight(640);
         Nav.init(stage);
         Nav.go("LoginView");
         stage.show();

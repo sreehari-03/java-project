@@ -1,14 +1,14 @@
 package com.srms.data;
 
-import com.srms.config.Database;
-import com.srms.model.Account;
-import com.srms.security.PasswordUtil;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Locale;
+
+import com.srms.config.Database;
+import com.srms.model.Account;
+import com.srms.security.PasswordUtil;
 
 public final class AccountService {
 
@@ -17,13 +17,12 @@ public final class AccountService {
 
     public static Account authenticate(String username, String password) throws SQLException {
         String sql = """
-                SELECT username, password_hash, role, full_name, registration_no
+                SELECT username, password_hash, role, full_name, student_id
                 FROM accounts
                 WHERE username = ?
                 """;
 
-        try (Connection connection = Database.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = Database.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, username);
 
             try (ResultSet result = statement.executeQuery()) {
@@ -37,7 +36,7 @@ public final class AccountService {
                         password,
                         result.getString("role").toLowerCase(Locale.ROOT),
                         result.getString("full_name"),
-                        result.getString("registration_no"));
+                        result.getString("student_id"));
             }
         }
     }

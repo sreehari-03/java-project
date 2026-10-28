@@ -14,6 +14,7 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -41,6 +42,7 @@ public class StudentPortalController {
     @FXML private ComboBox<String> corrSubject;
     @FXML private TextArea corrText;
     @FXML private TableView<Request> corrTable;
+    @FXML private Region corrSubjectPopupSpacer, focusSubjectPopupSpacer, focusTopicPopupSpacer;
     // special focus
     @FXML private ComboBox<String> focusSubject, focusTopic;
     @FXML private TextArea focusText;
@@ -51,6 +53,12 @@ public class StudentPortalController {
     @FXML
     private void initialize() {
         me = loadCurrentStudent();
+        try {
+            ds.loadResultsFromDatabase();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showResultDatabaseError();
+        }
         sideName.setText(me.name + " · Student");
         pages = new LinkedHashMap<>();
         pages.put(navDash, dashPage); pages.put(navResults, resultsPage); pages.put(navCorrection, correctionPage);
@@ -71,6 +79,7 @@ public class StudentPortalController {
         ObservableList<String> subjects = FXCollections.observableArrayList(DataStore.SUBJECTS);
         corrSubject.setItems(subjects);
         corrSubject.getSelectionModel().selectFirst();
+        reserveComboBoxPopupSpace(corrSubject, corrSubjectPopupSpacer);
         Ui.fit(corrTable);
         corrTable.setItems(ds.corrections.filtered(r -> r.reg.equals(me.reg)));
         corrTable.getColumns().addAll(
@@ -81,6 +90,8 @@ public class StudentPortalController {
 
         // special focus requests
         focusSubject.setItems(subjects);
+        reserveComboBoxPopupSpace(focusSubject, focusSubjectPopupSpacer);
+        reserveComboBoxPopupSpace(focusTopic, focusTopicPopupSpacer);
         focusSubject.valueProperty().addListener((o, a, b) -> {
             if (b != null) { focusTopic.setItems(FXCollections.observableArrayList(DataStore.TOPICS.get(b))); focusTopic.getSelectionModel().selectFirst(); }
         });
@@ -99,6 +110,21 @@ public class StudentPortalController {
 
         navGroup.selectedToggleProperty().addListener((o, a, n) -> { if (n == null) a.setSelected(true); else show(n); });
         navDash.setSelected(true);
+    }
+
+    private static void reserveComboBoxPopupSpace(ComboBox<?> comboBox, Region spacer) {
+        double popupSpace = comboBox.getVisibleRowCount() * 28 + 8;
+        spacer.setMinHeight(popupSpace);
+        spacer.setPrefHeight(popupSpace);
+        spacer.setMaxHeight(popupSpace);
+        comboBox.setOnShowing(event -> {
+            spacer.setVisible(true);
+            spacer.setManaged(true);
+        });
+        comboBox.setOnHidden(event -> {
+            spacer.setManaged(false);
+            spacer.setVisible(false);
+        });
     }
 
     private Student loadCurrentStudent() {
@@ -137,6 +163,15 @@ public class StudentPortalController {
     private void showDatabaseError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
         alert.setHeaderText("Student profile unavailable");
+        alert.setTitle("Student Result Management System");
+        alert.showAndWait();
+    }
+
+    private void showResultDatabaseError() {
+        Alert alert = new Alert(Alert.AlertType.ERROR,
+                "Results could not be loaded from MySQL. Check the database connection and restart the application.",
+                ButtonType.OK);
+        alert.setHeaderText("Results unavailable");
         alert.setTitle("Student Result Management System");
         alert.showAndWait();
     }
@@ -186,6 +221,17 @@ public class StudentPortalController {
     @FXML private void goFocus() { navFocus.setSelected(true); }
 
     @FXML
+    private void onBack() {
+        if ((!corrText.getText().isBlank() || !focusText.getText().isBlank())
+                && !Ui.confirm("You have feedback that has not been submitted. Go back and discard it?")) {
+            return;
+        }
+        if (!Nav.back()) {
+            Ui.info("There is no previous screen to return to.");
+        }
+    }
+
+    @FXML
     private void onSubmitCorrection() {
         String msg = corrText.getText().trim();
         if (msg.isEmpty()) { Ui.info("Please describe what needs correction or clarification."); return; }
@@ -205,6 +251,7 @@ public class StudentPortalController {
     @FXML
     private void onLogout() {
         ds.current = null;
+        Nav.clearHistory();
         Nav.go("LoginView");
     }
 }

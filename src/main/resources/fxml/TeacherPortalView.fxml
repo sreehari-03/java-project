@@ -9,6 +9,9 @@
 
   <left>
     <VBox styleClass="sidebar" prefWidth="250" spacing="4">
+      <Button text="←" styleClass="sidebar-back" onAction="#onBack">
+        <tooltip><Tooltip text="Back"/></tooltip>
+      </Button>
       <Label text="📘  Result System" styleClass="side-brand"/>
       <Label fx:id="teacherName" styleClass="side-sub" wrapText="true"/>
       <Region prefHeight="16"/>
@@ -29,19 +32,20 @@
 
         <!-- DASHBOARD -->
         <VBox fx:id="dashPage" spacing="18" visible="false" managed="false">
-          <HBox alignment="CENTER_LEFT" spacing="10">
+          <VBox spacing="10">
             <Label text="Teacher Dashboard" styleClass="h1"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button text="+ Enter Results" styleClass="btn-peach" onAction="#goResults"/>
-            <Button text="Student Records" styleClass="btn-secondary" onAction="#goStudents"/>
-            <Button text="Review Feedback" styleClass="btn-primary" onAction="#goFeedback"/>
-          </HBox>
-          <HBox spacing="14">
-            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS"><Label text="Total Students" styleClass="muted"/><Label fx:id="kpiStudents" styleClass="kpi-value"/></VBox>
-            <VBox styleClass="kpi-card, kpi-slate" HBox.hgrow="ALWAYS"><Label text="Results Entered" styleClass="muted"/><Label fx:id="kpiResults" styleClass="kpi-value"/></VBox>
-            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS"><Label text="Pending Feedback" styleClass="muted"/><Label fx:id="kpiPending" styleClass="kpi-value"/></VBox>
-            <VBox styleClass="kpi-card, kpi-coral" HBox.hgrow="ALWAYS"><Label text="Correction Requests" styleClass="muted"/><Label fx:id="kpiCorrections" styleClass="kpi-value"/></VBox>
-          </HBox>
+            <FlowPane hgap="10" vgap="8">
+              <Button text="+ Enter Results" styleClass="btn-peach" onAction="#goResults"/>
+              <Button text="Student Records" styleClass="btn-secondary" onAction="#goStudents"/>
+              <Button text="Review Feedback" styleClass="btn-primary" onAction="#goFeedback"/>
+            </FlowPane>
+          </VBox>
+          <FlowPane hgap="12" vgap="12">
+            <VBox styleClass="kpi-card" prefWidth="170" minWidth="145"><Label text="Total Students" wrapText="true" styleClass="muted"/><Label fx:id="kpiStudents" styleClass="kpi-value"/></VBox>
+            <VBox styleClass="kpi-card, kpi-slate" prefWidth="170" minWidth="145"><Label text="Results Entered" wrapText="true" styleClass="muted"/><Label fx:id="kpiResults" styleClass="kpi-value"/></VBox>
+            <VBox styleClass="kpi-card" prefWidth="170" minWidth="145"><Label text="Pending Feedback" wrapText="true" styleClass="muted"/><Label fx:id="kpiPending" styleClass="kpi-value"/></VBox>
+            <VBox styleClass="kpi-card, kpi-coral" prefWidth="170" minWidth="145"><Label text="Correction Requests" wrapText="true" styleClass="muted"/><Label fx:id="kpiCorrections" styleClass="kpi-value"/></VBox>
+          </FlowPane>
           <HBox spacing="18">
             <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="8">
               <Label text="Class-wise Average (%)" styleClass="h3"/>
@@ -50,7 +54,7 @@
                 <yAxis><NumberAxis side="LEFT" autoRanging="false" lowerBound="0" upperBound="100" tickUnit="20"/></yAxis>
               </BarChart>
             </VBox>
-            <VBox styleClass="card" prefWidth="320" minWidth="260" spacing="8">
+            <VBox styleClass="card" prefWidth="300" minWidth="240" spacing="8">
               <Label text="Recent Activity" styleClass="h3"/>
               <ListView fx:id="activityList" prefHeight="280"/>
             </VBox>
@@ -95,7 +99,12 @@
 
         <!-- FEEDBACK REVIEW -->
         <VBox fx:id="feedbackPage" spacing="14" visible="false" managed="false">
-          <Label text="Feedback Review" styleClass="h1"/>
+          <HBox alignment="CENTER_LEFT" spacing="10">
+            <Button text="←" styleClass="btn-outline" onAction="#onFeedbackBack" accessibleText="Back to dashboard"/>
+            <Label text="Feedback Review" styleClass="h1"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="+ Add Feedback" styleClass="btn-primary" onAction="#onAddFeedback"/>
+          </HBox>
           <TabPane tabClosingPolicy="UNAVAILABLE" prefHeight="480">
             <tabs>
               <Tab text="Correction Requests"><content><TableView fx:id="corrTable"/></content></Tab>

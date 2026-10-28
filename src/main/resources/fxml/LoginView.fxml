@@ -2,8 +2,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="com.srms.controller.LoginController">
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.srms.controller.LoginController"
+            fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="auth-scroll">
+  <content>
+  <GridPane maxHeight="Infinity">
   <fx:define><ToggleGroup fx:id="roleGroup"/></fx:define>
   <columnConstraints>
     <ColumnConstraints percentWidth="45"/>
@@ -11,18 +14,15 @@
   </columnConstraints>
   <rowConstraints><RowConstraints vgrow="ALWAYS"/></rowConstraints>
 
-  <!-- LEFT: branding (45%) -->
-  <VBox GridPane.columnIndex="0" styleClass="login-left" spacing="28">
-    <Label text="Student Result Management System" styleClass="brand-title" wrapText="true"/>
-    <StackPane styleClass="illustration" VBox.vgrow="ALWAYS">
-      <Label text="🎓  📚" styleClass="illustration-emoji"/>
-    </StackPane>
-    <Label text="Better Learning. Brighter Futures." styleClass="tagline" wrapText="true"/>
-  </VBox>
+  <!-- LEFT: supplied visual reference -->
+  <VBox GridPane.columnIndex="0" styleClass="login-left"/>
 
   <!-- RIGHT: form (55%) -->
   <VBox GridPane.columnIndex="1" styleClass="login-right">
-    <HBox alignment="CENTER_RIGHT"><Hyperlink text="Contact Admin" styleClass="link" onAction="#onContactAdmin"/></HBox>
+    <HBox alignment="CENTER_RIGHT" spacing="8">
+      <Label text="New here?" styleClass="muted"/>
+      <Hyperlink text="Contact Admin" styleClass="link" onAction="#onContactAdmin"/>
+    </HBox>
     <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
       <VBox maxWidth="400" spacing="6">
         <Label text="Welcome Back" styleClass="h1"/>
@@ -59,11 +59,13 @@
         <Button text="Login with School Account" styleClass="btn-outline" maxWidth="Infinity" onAction="#onSso"/>
 
         <HBox alignment="CENTER" style="-fx-padding: 14 0 0 0;">
-          <Label text="New here?" styleClass="muted"/>
+          <Label text="Need an account?" styleClass="muted"/>
           <Hyperlink text="Create account" styleClass="link" onAction="#onRegister"/>
         </HBox>
-        <Label text="Demo: student / student123  ·  teacher / teacher123" styleClass="muted" maxWidth="Infinity" alignment="CENTER" style="-fx-font-size: 12px;"/>
+        <Label text="Demo teacher: teacher / teacher123" styleClass="muted" maxWidth="Infinity" alignment="CENTER" style="-fx-font-size: 12px;"/>
       </VBox>
     </VBox>
   </VBox>
-</GridPane>
+  </GridPane>
+  </content>
+</ScrollPane>

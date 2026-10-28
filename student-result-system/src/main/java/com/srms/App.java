@@ -10,7 +10,7 @@ public class App extends Application {
         stage.setMinWidth(1100);
         stage.setMinHeight(740);
         Nav.init(stage);
-        Nav.go("TeacherPortalView");
+        Nav.go("LoginView");
         stage.show();
     }
 

@@ -49,21 +49,26 @@ public final class StudentService {
     }
 
     public static List<Student> findAll() throws SQLException {
-        String sql = """
-                SELECT admission_no, full_name, class_name, email, school, status
-                FROM students
-                ORDER BY admission_no
-                """;
-        List<Student> students = new ArrayList<>();
+        try (Connection connection = Database.getConnection()) {
+            String studentIdColumn = studentIdColumn(connection);
+            String sql = """
+                    SELECT DISTINCT s.admission_no, s.full_name, s.class_name,
+                                    s.email, s.school, s.status
+                    FROM students s
+                    JOIN accounts a ON a.student_id = s.%s
+                    WHERE LOWER(a.role) = 'student'
+                    ORDER BY s.admission_no
+                    """.formatted(studentIdColumn);
+            List<Student> students = new ArrayList<>();
 
-        try (Connection connection = Database.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet result = statement.executeQuery()) {
-            while (result.next()) {
-                students.add(readStudent(result));
+            try (PreparedStatement statement = connection.prepareStatement(sql);
+                 ResultSet result = statement.executeQuery()) {
+                while (result.next()) {
+                    students.add(readStudent(result));
+                }
             }
+            return students;
         }
-        return students;
     }
 
     private static Student readStudent(ResultSet result) throws SQLException {

@@ -15,7 +15,9 @@ import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -52,6 +54,11 @@ public class TeacherPortalController {
     private void initialize() {
         teacherName.setText(ds.current.name() + " · Teacher / Admin");
         refreshStudentsFromDatabase();
+        try {
+            ds.loadResultsFromDatabase();
+        } catch (SQLException e) {
+            showResultsDatabaseError(e);
+        }
         pages = new LinkedHashMap<>();
         pages.put(navDash, dashPage); pages.put(navStudents, studentsPage); pages.put(navResults, resultPage);
         pages.put(navRemarks, remarksPage); pages.put(navFeedback, feedbackPage); pages.put(navSettings, settingsPage);
@@ -92,6 +99,7 @@ public class TeacherPortalController {
     private void refreshStudentsFromDatabase() {
         try {
             databaseStudents.setAll(StudentService.findAll());
+            ds.students.setAll(databaseStudents);
             if (studentTable != null) studentTable.refresh();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -128,6 +136,96 @@ public class TeacherPortalController {
     @FXML private void goResults() { navResults.setSelected(true); }
     @FXML private void goStudents() { navStudents.setSelected(true); }
     @FXML private void goFeedback() { navFeedback.setSelected(true); }
+    @FXML private void onFeedbackBack() { navDash.setSelected(true); }
+    @FXML
+    private void onBack() {
+        if (hasUnsavedResults()
+                && !Ui.confirm("You have result changes that have not been saved. Go back and discard them?")) {
+            return;
+        }
+        if (!Nav.back()) {
+            Ui.info("There is no previous screen to return to.");
+        }
+    }
+
+    private boolean hasUnsavedResults() {
+        Student selectedStudent = studentBox.getValue();
+        String selectedTerm = termBox.getValue();
+        if (selectedStudent == null || selectedTerm == null) return false;
+
+        int[] savedMarks = ds.getResult(selectedStudent.reg, selectedTerm);
+        if (marksTable.getItems().size() != DataStore.SUBJECTS.size()) return true;
+        for (int i = 0; i < marksTable.getItems().size(); i++) {
+            Integer currentMark = MarkRow.parse(marksTable.getItems().get(i).getMarks());
+            if (savedMarks == null) {
+                if (currentMark != null) return true;
+            } else if (currentMark == null || currentMark != savedMarks[i]) {
+                return true;
+            }
+        }
+        return !remarksArea.getText().trim().equals(ds.getRemark(selectedStudent.reg, selectedTerm));
+    }
+
+    @FXML
+    private void onAddFeedback() {
+        if (databaseStudents.isEmpty()) {
+            Ui.info("There are no registered students to add feedback for.");
+            return;
+        }
+
+        ComboBox<Student> feedbackStudent = new ComboBox<>(FXCollections.observableArrayList(databaseStudents));
+        feedbackStudent.setPromptText("Select a student");
+        feedbackStudent.setMaxWidth(Double.MAX_VALUE);
+        ComboBox<String> feedbackTerm = new ComboBox<>(FXCollections.observableArrayList(DataStore.TERMS));
+        feedbackTerm.setPromptText("Select an academic term");
+        feedbackTerm.setMaxWidth(Double.MAX_VALUE);
+        TextArea feedbackText = new TextArea();
+        feedbackText.setPromptText("Write feedback for the student");
+        feedbackText.setWrapText(true);
+        feedbackText.setPrefRowCount(4);
+        Label validationMessage = new Label();
+        validationMessage.getStyleClass().add("error-label");
+
+        GridPane form = new GridPane();
+        form.setHgap(10);
+        form.setVgap(8);
+        form.addRow(0, new Label("Student"), feedbackStudent);
+        form.addRow(1, new Label("Academic term"), feedbackTerm);
+        form.addRow(2, new Label("Feedback"), feedbackText);
+        form.add(validationMessage, 1, 3);
+        GridPane.setHgrow(feedbackStudent, Priority.ALWAYS);
+        GridPane.setHgrow(feedbackTerm, Priority.ALWAYS);
+        GridPane.setHgrow(feedbackText, Priority.ALWAYS);
+
+        ButtonType saveButton = new ButtonType("Save Feedback", ButtonBar.ButtonData.OK_DONE);
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Add Teacher Feedback");
+        dialog.setHeaderText("Share feedback with a student");
+        dialog.getDialogPane().setContent(form);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButton, ButtonType.CANCEL);
+        dialog.getDialogPane().lookupButton(saveButton).addEventFilter(
+                javafx.event.ActionEvent.ACTION, event -> {
+                    if (feedbackStudent.getValue() == null || feedbackTerm.getValue() == null
+                            || feedbackText.getText().isBlank()) {
+                        validationMessage.setText("Select a student and term, and enter feedback.");
+                        event.consume();
+                    }
+                });
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isEmpty() || result.get() != saveButton) return;
+
+        Student selectedStudent = feedbackStudent.getValue();
+        try {
+            ds.saveTeacherFeedback(selectedStudent.reg, feedbackTerm.getValue(), feedbackText.getText().trim());
+        } catch (SQLException e) {
+            showResultsDatabaseError(e);
+            return;
+        }
+        refreshRemarks();
+        Ui.info("Feedback saved for " + selectedStudent.name + ".");
+    }
+
     @FXML private void onRefreshStudents() {
         refreshStudentsFromDatabase();
         refreshClassFilter();
@@ -241,9 +339,24 @@ public class TeacherPortalController {
             if (v == null || v < 0 || v > 100) { Ui.info("Enter marks between 0 and 100 for every subject."); return; }
             m[i] = v;
         }
-        ds.saveResult(s.reg, t, m, remarksArea.getText().trim());
+        try {
+            ds.saveResult(s.reg, t, m, remarksArea.getText().trim());
+        } catch (SQLException e) {
+            showResultsDatabaseError(e);
+            return;
+        }
         ds.addActivity("Marks saved for " + s.name + " (" + t + ")");
         Ui.info("Result and remarks saved for " + s.name + ".");
+    }
+
+    private void showResultsDatabaseError(SQLException e) {
+        e.printStackTrace();
+        Alert alert = new Alert(Alert.AlertType.ERROR,
+                "The result could not be loaded or saved. Check the MySQL connection and try again.",
+                ButtonType.OK);
+        alert.setHeaderText("Results unavailable");
+        alert.setTitle("Student Result Management System");
+        alert.showAndWait();
     }
 
     @FXML private void onCancel() { navDash.setSelected(true); }
@@ -290,6 +403,7 @@ public class TeacherPortalController {
     @FXML
     private void onLogout() {
         ds.current = null;
+        Nav.clearHistory();
         Nav.go("LoginView");
     }
 

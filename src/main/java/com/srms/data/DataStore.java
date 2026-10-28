@@ -4,12 +4,12 @@ import com.srms.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
 /**
- * In-memory data layer so the UI runs stand-alone.
- * TODO: replace the methods below with JDBC/MySQL DAO calls (the controllers only talk to this class).
+ * Shared application state. Results are loaded from and saved to MySQL.
  */
 public final class DataStore {
     public static final DataStore I = new DataStore();
@@ -37,25 +37,6 @@ public final class DataStore {
 
     private DataStore() {
         accounts.add(new Account("teacher", "teacher123", "teacher", "Ms. Priya Menon", "TCH001"));
-        accounts.add(new Account("student", "student123", "student", "Aarav Nair", "STU001"));
-        String sc = "St. Mary’s High School";
-        students.addAll(
-                new Student("STU001", "Aarav Nair", "10-A", "aarav@school.edu", sc),
-                new Student("STU002", "Diya Thomas", "10-A", "diya@school.edu", sc),
-                new Student("STU003", "Rohan Varma", "10-B", "rohan@school.edu", sc),
-                new Student("STU004", "Meera Das", "9-A", "meera@school.edu", sc),
-                new Student("STU005", "Kabir Singh", "9-B", "kabir@school.edu", sc),
-                new Student("STU006", "Anjali Raj", "10-B", "anjali@school.edu", sc));
-        results.put(key("STU001", "Term 1"), new int[]{78, 66, 82, 71, 90});
-        results.put(key("STU002", "Term 1"), new int[]{88, 92, 79, 85, 94});
-        results.put(key("STU003", "Term 1"), new int[]{40, 33, 58, 49, 62});
-        results.put(key("STU004", "Term 1"), new int[]{67, 71, 75, 60, 80});
-        results.put(key("STU005", "Term 1"), new int[]{55, 48, 60, 52, 70});
-        remarks.put(key("STU001", "Term 1"), "Strong in computing. Science needs revision of electricity and chemical reactions.");
-        remarks.put(key("STU003", "Term 1"), "Needs daily practice in algebra and science concepts. Recommend extra tutorials.");
-        corrections.add(new Request(seq++, "STU003", "Science", "", "Question 5 seems marked wrongly.", "2026-10-12"));
-        topics.add(new Request(seq++, "STU001", "Science", "Electricity", "Need help with circuits.", "2026-10-15"));
-        activity.addAll("Marks updated for Rohan Varma", "New student registered: Meera Das", "Correction request received");
     }
 
     private static String key(String reg, String term) { return reg + "|" + term; }
@@ -86,7 +67,27 @@ public final class DataStore {
     // ---- results & remarks
     public int[] getResult(String reg, String term) { return results.get(key(reg, term)); }
     public String getRemark(String reg, String term) { return remarks.getOrDefault(key(reg, term), ""); }
-    public void saveResult(String reg, String term, int[] marks, String remark) {
+    public void loadResultsFromDatabase() throws SQLException {
+        results.clear();
+        remarks.clear();
+        for (ResultService.SavedResult saved : ResultService.findAll()) {
+            String resultKey = key(saved.admissionNo(), saved.term());
+            if (saved.marks() != null) {
+                results.put(resultKey, saved.marks());
+            }
+            if (saved.remark() != null && !saved.remark().isBlank()) {
+                remarks.put(resultKey, saved.remark());
+            }
+        }
+    }
+
+    public void saveTeacherFeedback(String reg, String term, String feedback) throws SQLException {
+        ResultService.saveTeacherFeedback(reg, term, feedback);
+        remarks.put(key(reg, term), feedback);
+        addActivity("Teacher feedback added for " + nameOf(reg));
+    }
+    public void saveResult(String reg, String term, int[] marks, String remark) throws SQLException {
+        ResultService.save(reg, term, marks, remark);
         results.put(key(reg, term), marks);
         remarks.put(key(reg, term), remark);
     }

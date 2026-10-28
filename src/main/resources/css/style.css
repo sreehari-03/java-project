@@ -69,19 +69,50 @@
 .seg-btn:selected { -fx-background-color: #FFFFFF; -fx-text-fill: -navy; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 4, 0, 0, 1); }
 
 /* ---- login / register ---- */
-.login-left { -fx-background-color: -navy; -fx-padding: 48; }
+.login-left {
+    -fx-background-color: -navy;
+    -fx-background-image: url("../images/login-learning.png");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
 .brand-title { -fx-text-fill: #FFFFFF; -fx-font-size: 30px; -fx-font-weight: bold; }
 .tagline { -fx-text-fill: -peach; -fx-font-size: 18px; -fx-font-weight: bold; }
 .illustration { -fx-background-color: linear-gradient(to bottom right, #2C3E50, -slate); -fx-background-radius: 16px; -fx-min-height: 220px; }
 .illustration-emoji { -fx-font-size: 72px; -fx-text-fill: #FFFFFF; }
-.login-right { -fx-background-color: #F6F6F6; -fx-padding: 22 56 22 56; }
-.register-bg { -fx-background-color: linear-gradient(to bottom right, #CFD8E3, #E9EEF4); -fx-padding: 24; }
-.register-card { -fx-padding: 32; -fx-effect: dropshadow(gaussian, rgba(27,38,49,0.30), 40, 0.1, 0, 14); }
+.login-right { -fx-background-color: #F6F6F6; -fx-padding: 22 32 22 32; }
+.auth-scroll, .auth-scroll > .viewport { -fx-background-color: transparent; }
+.auth-scroll { -fx-background: transparent; -fx-border-color: transparent; }
+.register-bg {
+    -fx-background-color: #F2F6FB;
+    -fx-background-image: url("../images/register-scene.png");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 18;
+}
+.register-card { -fx-padding: 16 26 18 26; -fx-effect: dropshadow(gaussian, rgba(27,38,49,0.22), 32, 0.08, 0, 10); }
+.back-link { -fx-background-color: transparent; -fx-text-fill: -slate; -fx-padding: 2 4 6 0; -fx-font-weight: normal; }
+.back-link:hover { -fx-text-fill: -navy; }
+.register-brand { -fx-padding: 0 0 2 0; }
+.register-cap { -fx-font-size: 28px; }
+.register-brand-title { -fx-font-size: 21px; -fx-font-weight: bold; }
+.register-brand-subtitle { -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: -muted; }
+.register-heading { -fx-padding: 0 0 2 0; }
+.register-card .field-label { -fx-padding: 4 0 1 0; }
+.register-card .input-box .text-field, .register-card .input-box .password-field { -fx-padding: 6px 8px; }
+.register-card .seg-btn { -fx-pref-height: 32px; }
+.register-card .error-label { -fx-padding: 2 0 2 0; }
 
 /* ---- portal chrome ---- */
 .sidebar { -fx-background-color: -navy; -fx-padding: 22 14 22 14; }
 .side-brand { -fx-text-fill: #FFFFFF; -fx-font-size: 17px; -fx-font-weight: bold; -fx-padding: 0 0 0 10; }
 .side-sub { -fx-text-fill: -peach; -fx-font-size: 12px; -fx-padding: 0 0 0 10; }
+.sidebar-back {
+    -fx-background-color: rgba(255,255,255,0.08); -fx-text-fill: #FFFFFF;
+    -fx-font-size: 20px; -fx-padding: 5 12 5 12; -fx-background-radius: 8px;
+}
+.sidebar-back:hover { -fx-background-color: rgba(255,255,255,0.18); }
 .nav-btn {
     -fx-background-color: transparent; -fx-text-fill: #CBD5E0; -fx-alignment: CENTER_LEFT;
     -fx-background-radius: 8px; -fx-padding: 11 14 11 14; -fx-font-weight: normal; -fx-cursor: hand;
@@ -91,11 +122,11 @@
 .nav-btn:focused { -fx-background-insets: 0; }
 .page-scroll, .page-scroll > .viewport { -fx-background-color: transparent; }
 .scroll-pane { -fx-background-color: transparent; -fx-padding: 0; }
-.page-pad { -fx-padding: 28 32 28 32; }
+.page-pad { -fx-padding: 22 24 22 24; }
 
 /* ---- cards & KPIs ---- */
 .card { -fx-background-color: #FFFFFF; -fx-background-radius: 12px; -fx-border-color: -line; -fx-border-radius: 12px; -fx-padding: 20; }
-.kpi-card { -fx-background-color: #FFFFFF; -fx-background-radius: 12px; -fx-border-color: -line -line -line -peach; -fx-border-width: 1 1 1 5; -fx-border-radius: 12px; -fx-padding: 18; -fx-spacing: 4; }
+.kpi-card { -fx-background-color: #FFFFFF; -fx-background-radius: 12px; -fx-border-color: -line -line -line -peach; -fx-border-width: 1 1 1 5; -fx-border-radius: 12px; -fx-padding: 14; -fx-spacing: 4; }
 .kpi-slate { -fx-border-color: -line -line -line -slate; }
 .kpi-coral { -fx-border-color: -line -line -line -coral; }
 .kpi-value { -fx-font-size: 30px; -fx-font-weight: bold; }

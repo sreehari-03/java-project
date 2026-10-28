@@ -59,6 +59,22 @@ public class Database {
                             FOREIGN KEY (student_id) REFERENCES students(id)
                     )
                     """);
+            statement.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS srms_portal_results (
+                        admission_no VARCHAR(64) NOT NULL,
+                        term VARCHAR(32) NOT NULL,
+                        mathematics INT NULL,
+                        science INT NULL,
+                        english INT NULL,
+                        social_studies INT NULL,
+                        computer_science INT NULL,
+                        teacher_remarks TEXT NOT NULL,
+                        PRIMARY KEY (admission_no, term),
+                        CONSTRAINT fk_srms_portal_results_student
+                            FOREIGN KEY (admission_no) REFERENCES students(admission_no)
+                            ON DELETE CASCADE
+                    )
+                    """);
         }
     }
 }

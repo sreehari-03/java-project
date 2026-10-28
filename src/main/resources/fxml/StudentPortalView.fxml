@@ -10,6 +10,9 @@
 
   <left>
     <VBox styleClass="sidebar" prefWidth="250" spacing="4">
+      <Button text="←" styleClass="sidebar-back" onAction="#onBack">
+        <tooltip><Tooltip text="Back"/></tooltip>
+      </Button>
       <Label text="📘  Result System" styleClass="side-brand"/>
       <Label fx:id="sideName" styleClass="side-sub" wrapText="true"/>
       <Region prefHeight="16"/>
@@ -31,15 +34,15 @@
         <VBox fx:id="dashPage" spacing="18" visible="false" managed="false">
           <HBox styleClass="profile-header" spacing="16" alignment="CENTER_LEFT">
             <Label fx:id="avatar" styleClass="avatar"/>
-            <VBox spacing="2"><Label fx:id="dpName" styleClass="profile-name"/><Label fx:id="dpMeta" styleClass="profile-meta"/></VBox>
+            <VBox spacing="2"><Label fx:id="dpName" wrapText="true" styleClass="profile-name"/><Label fx:id="dpMeta" wrapText="true" styleClass="profile-meta"/></VBox>
           </HBox>
-          <HBox spacing="14">
-            <Button text="📊  My Results&#10;View marks &amp; teacher remarks" styleClass="action-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#goResults"/>
-            <Button text="✏  Request Correction&#10;Raise a clarification" styleClass="action-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#goCorrection"/>
-            <Button text="🎯  Request Extra Focus&#10;Suggest topics for support" styleClass="action-card" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#goFocus"/>
-          </HBox>
+          <FlowPane hgap="14" vgap="14">
+            <Button text="📊  My Results&#10;View marks &amp; teacher remarks" styleClass="action-card" prefWidth="185" minWidth="160" onAction="#goResults"/>
+            <Button text="✏  Request Correction&#10;Raise a clarification" styleClass="action-card" prefWidth="185" minWidth="160" onAction="#goCorrection"/>
+            <Button text="🎯  Request Extra Focus&#10;Suggest topics for support" styleClass="action-card" prefWidth="185" minWidth="160" onAction="#goFocus"/>
+          </FlowPane>
           <HBox spacing="18">
-            <VBox styleClass="card" prefWidth="320" spacing="8" alignment="TOP_CENTER">
+            <VBox styleClass="card" prefWidth="280" minWidth="220" spacing="8" alignment="TOP_CENTER">
               <Label text="Overall Performance" styleClass="h3"/>
               <StackPane>
                 <PieChart fx:id="donut" legendVisible="false" labelsVisible="false" animated="false" startAngle="90" prefWidth="240" prefHeight="240"/>
@@ -60,12 +63,11 @@
 
         <!-- RESULTS & REMARKS -->
         <VBox fx:id="resultsPage" spacing="14" visible="false" managed="false">
-          <HBox alignment="CENTER_LEFT" spacing="10">
+          <FlowPane alignment="CENTER_LEFT" hgap="10" vgap="8">
             <Label text="Results &amp; Remarks" styleClass="h1"/>
-            <Region HBox.hgrow="ALWAYS"/>
             <ComboBox fx:id="termBox" prefWidth="170"/>
             <Button text="Submit Correction Request" styleClass="btn-peach" onAction="#goCorrection"/>
-          </HBox>
+          </FlowPane>
           <TableView fx:id="resultTable" prefHeight="300"/>
           <VBox styleClass="card" spacing="6">
             <Label text="Teacher Remarks" styleClass="h3"/>
@@ -78,7 +80,8 @@
           <Label text="Request Correction" styleClass="h1"/>
           <VBox styleClass="card" spacing="8">
             <Label text="Subject" styleClass="field-label"/>
-            <ComboBox fx:id="corrSubject" prefWidth="300"/>
+            <ComboBox fx:id="corrSubject" maxWidth="Infinity" visibleRowCount="3"/>
+            <Region fx:id="corrSubjectPopupSpacer" visible="false" managed="false"/>
             <Label text="What needs correction or clarification?" styleClass="field-label"/>
             <TextArea fx:id="corrText" prefRowCount="4" wrapText="true"/>
             <Button text="Submit Request" styleClass="btn-primary" onAction="#onSubmitCorrection"/>
@@ -92,8 +95,16 @@
           <Label text="Request Extra Focus" styleClass="h1"/>
           <VBox styleClass="card" spacing="8">
             <HBox spacing="14">
-              <VBox spacing="4" HBox.hgrow="ALWAYS"><Label text="Select Subject" styleClass="field-label"/><ComboBox fx:id="focusSubject" maxWidth="Infinity"/></VBox>
-              <VBox spacing="4" HBox.hgrow="ALWAYS"><Label text="Topic / Area" styleClass="field-label"/><ComboBox fx:id="focusTopic" maxWidth="Infinity"/></VBox>
+              <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Select Subject" styleClass="field-label"/>
+                <ComboBox fx:id="focusSubject" maxWidth="Infinity" visibleRowCount="3"/>
+                <Region fx:id="focusSubjectPopupSpacer" visible="false" managed="false"/>
+              </VBox>
+              <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Topic / Area" styleClass="field-label"/>
+                <ComboBox fx:id="focusTopic" maxWidth="Infinity" visibleRowCount="3"/>
+                <Region fx:id="focusTopicPopupSpacer" visible="false" managed="false"/>
+              </VBox>
             </HBox>
             <Label text="Additional Comments / Specific Help Needed" styleClass="field-label"/>
             <TextArea fx:id="focusText" prefRowCount="4" wrapText="true"/>
@@ -108,11 +119,11 @@
           <Label text="Profile" styleClass="h1"/>
           <GridPane styleClass="card" hgap="24" vgap="12">
             <columnConstraints><ColumnConstraints minWidth="160"/><ColumnConstraints hgrow="ALWAYS"/></columnConstraints>
-            <Label text="Full Name" styleClass="muted" GridPane.rowIndex="0"/><Label fx:id="profName" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-            <Label text="Registration No" styleClass="muted" GridPane.rowIndex="1"/><Label fx:id="profReg" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-            <Label text="Class" styleClass="muted" GridPane.rowIndex="2"/><Label fx:id="profClass" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-            <Label text="Email" styleClass="muted" GridPane.rowIndex="3"/><Label fx:id="profEmail" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-            <Label text="School" styleClass="muted" GridPane.rowIndex="4"/><Label fx:id="profSchool" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            <Label text="Full Name" styleClass="muted" GridPane.rowIndex="0"/><Label fx:id="profName" wrapText="true" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            <Label text="Registration No" styleClass="muted" GridPane.rowIndex="1"/><Label fx:id="profReg" wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Class" styleClass="muted" GridPane.rowIndex="2"/><Label fx:id="profClass" wrapText="true" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <Label text="Email" styleClass="muted" GridPane.rowIndex="3"/><Label fx:id="profEmail" wrapText="true" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <Label text="School" styleClass="muted" GridPane.rowIndex="4"/><Label fx:id="profSchool" wrapText="true" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
           </GridPane>
         </VBox>
 
